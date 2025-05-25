@@ -1,0 +1,4 @@
+# ignore generated files stored in .vscode folder
+.classpath
+.modulepath
+.sources
