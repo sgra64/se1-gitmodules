@@ -22,8 +22,16 @@ if [ -f pom.xml ]; then
     while read line; do export CLASSPATH="$line"; done < "$cpfile"
 
     function show_classpath() {
-        echo " - CLASSPATH:"
-        echo $CLASSPATH | tr ';' '\n' | sort | sed -e 's!.*/!!' -e 's/.*/   - &/'
+        if [ "$CLASSPATH" ]; then
+            [[ "$(uname)" =~ (CYGWIN|MINGW) ]] && local sep=';' || local sep=':'
+            echo $CLASSPATH | tr "$sep" '\n' > .cp1
+            sed -e '/\.jar/d' < .cp1 > .cp2
+            sed -e '/\.jar/!d' -e 's!.*/!!' < .cp1 | sort > .cp3
+            echo " - CLASSPATH:" && cat .cp[23] | sed -e 's/.*/   - &/'
+            rm -f .cp[123]
+        else
+            echo "CLASSPATH is not set (empty)"
+        fi
     }
 
     echo -e "\\\\\ \nproject environment has been set with:"
